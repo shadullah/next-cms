@@ -3,12 +3,19 @@ import React, { useState } from "react";
 import { HiBars2 } from "react-icons/hi2";
 import { IoMdClose } from "react-icons/io";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext/AuthContext";
 
 const Navbar = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { currentUser, logout } = useAuth();
 
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
+  };
+
+  const handleLogout = () => {
+    logout();
+    window.location.href = "/login";
   };
 
   return (
@@ -17,7 +24,9 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="logo">
-            <h1 className="text-2xl font-bold text-gray-800">/||/\/</h1>
+            <Link href="/">
+              <h1 className="text-2xl font-bold text-gray-800">/||/\/</h1>
+            </Link>
           </div>
 
           {/* Navigation Links */}
@@ -27,11 +36,18 @@ const Navbar = () => {
                 Get in touch
               </li>
 
+              {currentUser && (
+                <li className="text-gray-800 hover:text-indigo-600 cursor-pointer">
+                  <Link href="/dashboard">Dashboard</Link>
+                </li>
+              )}
+
               <li className="text-gray-800 hover:text-indigo-600 cursor-pointer">
-                Dashboard
-              </li>
-              <li className="text-gray-800 hover:text-indigo-600 cursor-pointer">
-                Login
+                {currentUser ? (
+                  <button onClick={handleLogout}>Logout</button>
+                ) : (
+                  <Link href="/login">Login</Link>
+                )}
               </li>
               <li className="ml-4">
                 <button>

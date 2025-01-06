@@ -1,14 +1,22 @@
 "use client";
+import { useAuth } from "@/context/AuthContext/AuthContext";
 import React, { useState } from "react";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const { login } = useAuth();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log("Login attempt with:", { email, password });
+    console.log("Login attempt with:", { email });
+
+    if (login(email)) {
+      window.location.href = "/";
+    } else {
+      window.alert("Invalid, try again");
+    }
   };
 
   return (
