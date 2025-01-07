@@ -3,7 +3,7 @@ import React from "react";
 
 const Dashboard = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="my-36 flex items-center justify-center p-4">
       <div className="max-w-4xl w-full">
         <h1 className="text-3xl font-bold text-gray-800 text-center mb-8">
           Dashboard
@@ -11,7 +11,7 @@ const Dashboard = () => {
         <ul className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <li>
             <Link
-              href="/dashboard/add"
+              href="/dashboard/card"
               className="block text-center p-6 border-2 border-gray-700 rounded-lg hover:border-indigo-600 hover:text-indigo-600 transition-colors"
             >
               Add Card Section

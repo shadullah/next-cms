@@ -1,102 +1,160 @@
 "use client";
-import React from "react";
 import Link from "next/link";
+import { useState } from "react";
+import { toast } from "react-hot-toast";
 
-const Feedback = () => {
+const FeedbackPage = () => {
+  const [formData, setFormData] = useState({
+    description: "",
+    compnyName: "",
+    name: "",
+  });
+  const [imgFeed, setImgFeed] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setImgFeed(e.target.files[0]);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append("description", formData.description);
+      formDataToSend.append("compnyName", formData.compnyName);
+      formDataToSend.append("name", formData.name);
+      if (imgFeed) {
+        formDataToSend.append("imgFeed", imgFeed);
+      }
+
+      const response = await fetch(`/api/v1/feedback`, {
+        method: "POST",
+        body: formDataToSend,
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success("Feedback submitted successfully!");
+        // Reset form
+        setFormData({
+          description: "",
+          compnyName: "",
+          name: "",
+        });
+        setImgFeed(null);
+      } else {
+        toast.error(data.message || "Something went wrong");
+      }
+    } catch (error) {
+      console.error("Error submitting feedback:", error);
+      toast.error("Failed to submit feedback");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen p-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-bold text-gray-800">Feedback Section</h1>
+    <div className="max-w-2xl mx-auto p-6">
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-2xl font-bold">Submit Feedback</h1>
+        <p>
           <Link
             href="/dashboard"
             className="text-indigo-600 hover:text-indigo-800"
           >
-            Back to Dashboard
+            &larr; Back to Dashboard
           </Link>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <div className="space-y-6">
-            {/* Feedback Form */}
-            <form className="space-y-6">
-              <div>
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Name
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
-                  placeholder="Enter your name"
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
-                  placeholder="Enter your email"
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="feedback"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Feedback
-                </label>
-                <textarea
-                  id="feedback"
-                  rows={4}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
-                  placeholder="Enter your feedback"
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="rating"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Rating
-                </label>
-                <select
-                  id="rating"
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
-                >
-                  <option value="">Select rating</option>
-                  <option value="5">5 - Excellent</option>
-                  <option value="4">4 - Very Good</option>
-                  <option value="3">3 - Good</option>
-                  <option value="2">2 - Fair</option>
-                  <option value="1">1 - Poor</option>
-                </select>
-              </div>
-
-              <button
-                type="submit"
-                className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-              >
-                Submit Feedback
-              </button>
-            </form>
-          </div>
-        </div>
+        </p>
       </div>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="name" className="block mb-2">
+            Name
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleInputChange}
+            className="w-full p-2 border rounded"
+            required
+          />
+        </div>
+
+        <div>
+          <label htmlFor="compnyName" className="block mb-2">
+            Company Name
+          </label>
+          <input
+            type="text"
+            id="compnyName"
+            name="compnyName"
+            value={formData.compnyName}
+            onChange={handleInputChange}
+            className="w-full p-2 border rounded"
+            required
+          />
+        </div>
+
+        <div>
+          <label htmlFor="description" className="block mb-2">
+            Description
+          </label>
+          <textarea
+            id="description"
+            name="description"
+            value={formData.description}
+            onChange={handleInputChange}
+            className="w-full p-2 border rounded"
+            rows={4}
+            required
+          />
+        </div>
+
+        <div>
+          <label htmlFor="imgFeed" className="block mb-2">
+            Image
+          </label>
+          <input
+            type="file"
+            id="imgFeed"
+            name="imgFeed"
+            onChange={handleFileChange}
+            accept="image/*"
+            className="w-full p-2 border rounded"
+            required
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={loading}
+          className={`w-full bg-blue-500 text-white py-2 rounded ${
+            loading ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-600"
+          }`}
+        >
+          {loading ? "Submitting..." : "Submit Feedback"}
+        </button>
+      </form>
     </div>
   );
 };
 
-export default Feedback;
+export default FeedbackPage;
