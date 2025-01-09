@@ -9,7 +9,8 @@ const nextConfig: NextConfig = {
     return [
       {
         source:"/api/:path*",
-        destination:"http://localhost:8000/api/:path*"
+        // destination:"http://localhost:8000/api/:path*"
+        destination:"https://cms-backend-two-flax.vercel.app/api/:path*"
       }
     ]
   }
