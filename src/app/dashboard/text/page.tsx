@@ -75,32 +75,47 @@ const HomeTexts = () => {
     }
   };
 
-  const handleInputChange = (
-    section: keyof TextData,
-    field: string,
-    value: string | number,
+  const handleInputChange = <
+    K extends keyof TextData,
+    F extends keyof TextData[K]
+  >(
+    section: K,
+    field: F,
+    value: TextData[K][F] extends Record<string, unknown>
+      ? string | number
+      : TextData[K][F],
     nestedField?: string
   ) => {
     setFormData((prev) => {
       if (!prev) return prev;
 
-      if (nestedField) {
+      const sectionData = prev[section];
+      const fieldData = sectionData[field];
+
+      // Handle nested field updates
+      if (
+        nestedField &&
+        typeof fieldData === "object" &&
+        fieldData !== null &&
+        !Array.isArray(fieldData)
+      ) {
         return {
           ...prev,
           [section]: {
-            ...prev[section],
+            ...(sectionData as Record<string, unknown>),
             [field]: {
-              ...(prev[section][field] || {}),
+              ...fieldData,
               [nestedField]: value,
             },
           },
         };
       }
 
+      // Handle top-level field updates
       return {
         ...prev,
         [section]: {
-          ...prev[section],
+          ...(sectionData as Record<string, unknown>),
           [field]: value,
         },
       };
