@@ -1,9 +1,10 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { HiBars2 } from "react-icons/hi2";
 import { IoMdClose } from "react-icons/io";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext/AuthContext";
+import gsap from "gsap";
 
 const Navbar = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,10 +19,74 @@ const Navbar = () => {
     window.location.href = "/login";
   };
 
+  useEffect(() => {
+    // Get all buttons with the class 'button'
+    const buttons = gsap.utils.toArray<HTMLElement>(".button");
+
+    // Create an array to store cleanup functions
+    const cleanupFunctions: (() => void)[] = [];
+
+    buttons.forEach((button: HTMLElement) => {
+      const span = button.querySelector<HTMLElement>("span");
+      if (!span) return;
+
+      const tl = gsap.timeline({ paused: true });
+
+      tl.to(span, {
+        duration: 0.2,
+        yPercent: -150,
+        ease: "power2.in",
+      })
+        .set(span, {
+          yPercent: 150,
+        })
+        .to(span, {
+          duration: 0.2,
+          yPercent: 0,
+        });
+
+      const handleEnter = () => tl.play(0);
+
+      button.addEventListener("mouseenter", handleEnter);
+
+      // Store cleanup function
+      cleanupFunctions.push(() => {
+        button.removeEventListener("mouseenter", handleEnter);
+        tl.kill();
+      });
+    });
+
+    // Return cleanup function
+    return () => {
+      cleanupFunctions.forEach((cleanup) => cleanup());
+    };
+  }, []);
+
+  // const titleRef = useRef(null);
+
+  // useEffect(() => {
+  //   if (titleRef.current) {
+  //     // First, set initial state
+  //     gsap.set(titleRef.current, {
+  //       opacity: 0,
+  //       y: 50, // Start 100px below final position
+  //     });
+
+  //     // Then animate
+  //     gsap.to(titleRef.current, {
+  //       opacity: 1,
+  //       y: 0,
+  //       duration: 1.5,
+  //       ease: "power4.out",
+  //       delay: 0.2, // Small delay to ensure everything is ready
+  //     });
+  //   }
+  // }, []);
+
   return (
-    <nav className="fixed top-0 w-full bg-white shadow-md z-50">
+    <nav className="fixed top-0 w-full bg-white h-[120px] z-50 py-6">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-full">
           {/* Logo */}
           <div className="logo">
             <Link href="/">
@@ -32,29 +97,40 @@ const Navbar = () => {
           {/* Navigation Links */}
           <div className="navlinks">
             <ul className="flex items-center gap-8">
-              <li className="text-gray-800 hover:text-indigo-600 border-2 border-violet-800 rounded-full cursor-pointer px-4 py-2">
-                Get in touch
+              <li>
+                <button className="button text-gray-800 hover:text-indigo-600 border-[0.5px] border-violet-800 rounded-full cursor-pointer px-6 py-2 overflow-hidden">
+                  <span className="inline-block">Get in touch</span>
+                </button>
               </li>
 
               {currentUser && (
-                <li className="text-gray-800 hover:text-indigo-600 cursor-pointer">
-                  <Link href="/dashboard">Dashboard</Link>
+                <li>
+                  <button className=" text-gray-800 hover:text-indigo-600 overflow-hidden">
+                    <span className="inline-block">
+                      <Link href="/dashboard">Dashboard</Link>
+                    </span>
+                  </button>
                 </li>
               )}
 
-              <li className="text-gray-800 hover:text-indigo-600 cursor-pointer">
+              <li>
                 {currentUser ? (
                   <button onClick={handleLogout}>Logout</button>
                 ) : (
-                  <Link href="/login">Login</Link>
+                  <button className=" text-gray-800 hover:text-indigo-600 overflow-hidden">
+                    <Link href="/login">Login</Link>
+                  </button>
                 )}
               </li>
+
               <li className="ml-4">
-                <button>
-                  <HiBars2
-                    className="text-2xl cursor-pointer text-gray-800 hover:text-indigo-600"
-                    onClick={toggleModal}
-                  />
+                <button className="button border-[0.5px] border-indigo-600 h-12 w-12 p-3 rounded-full overflow-hidden">
+                  <span className="inline-block">
+                    <HiBars2
+                      className="text-2xl cursor-pointer text-gray-800 hover:text-indigo-600"
+                      onClick={toggleModal}
+                    />
+                  </span>
                 </button>
               </li>
             </ul>

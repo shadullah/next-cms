@@ -1,4 +1,4 @@
-import Navbar from "@/Components/shared/navbar/page";
+import Navbar from "@/Components/shared/navbar/Navbar";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -22,7 +22,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <AuthProvider>
           <Navbar />
-          <main className="pt-16">{children}</main>
+          <main className="pt-[100px]">{children}</main>
         </AuthProvider>
         <Toaster position="top-right" />
       </body>
