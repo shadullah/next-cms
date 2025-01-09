@@ -10,6 +10,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { FaDeezer } from "react-icons/fa";
 import BigText from "./Bigtext/BigText";
 import Footer from "@/Components/shared/footer/Footer";
+import Cards from "./cards/Cards";
+import Feedback from "./Feedback/Feedback";
 
 interface TextData {
   hero: {
@@ -222,7 +224,9 @@ export default function HomePage() {
       </section>
 
       {/* cards section */}
-      <section className=" my-12"></section>
+      <section className="mt-12">
+        <Cards />
+      </section>
 
       {/* Expertise Section */}
       <section className="py-16 bg-gray-950">
@@ -455,13 +459,7 @@ export default function HomePage() {
       </section>
 
       <section>
-        <div>
-          <h1 className="text-5xl mb-12">Client Feedback</h1>
-          <p className="text-2xl mb-12">
-            We&apos;re collaborators - We build tight-knit partnerships with our
-            clients
-          </p>
-        </div>
+        <Feedback />
       </section>
 
       {/* Footer Contact Section */}

@@ -24,7 +24,6 @@ const BigText = () => {
         start: "top top",
         end: "+=100%", // Adjusted to ensure enough scrolling space
         scrub: 1,
-        pin: true,
         markers: true, // Remove in production
         invalidateOnRefresh: true,
       },
@@ -38,8 +37,12 @@ const BigText = () => {
 
   return (
     <div>
-      <section ref={containerRef} className="relative h-screen overflow-hidden">
-        <div className="absolute top-1/2 left-0 min-w-[150vw] -translate-y-1/2">
+      <section
+        ref={containerRef}
+        className="relative h-screen overflow-hidden"
+        style={{ isolation: "isolate" }} // Add stacking context
+      >
+        <div className="absolute top-1/2 left-0 w-[150vw] -translate-y-1/2">
           <h1
             ref={textRef}
             className="text-[15vw] font-bold text-gray-900 whitespace-nowrap"
